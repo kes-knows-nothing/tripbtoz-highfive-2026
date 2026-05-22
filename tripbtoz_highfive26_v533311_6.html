@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>원티드 하이파이브 2026 — 트립비토즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #5B4FCF;
+  --brand-mid: #7B6FE8;
+  --brand-bg: #EFEDFC;
+  --brand-dark: #3B3099;
+  --black: #1A1A2E;
+  --gray-text: #52526A;
+  --gray-light: #8E8EA8;
+  --bg-card: #F5F5FA;
+  --bg-section: #F0F0F7;
+  --border: #E2E2EE;
+  --white: #FFFFFF;
+  --accent-teal: #2DA89A;
+  --accent-teal-bg: #E6F6F4;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+  background: var(--bg-section);
+  color: var(--black);
+  overflow-x: hidden;
+}
+#progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 3px; background: var(--brand);
+  width: 0%; z-index: 1000;
+}
+#toc {
+  position: fixed; right: 1.75rem; top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 100;
+}
+.toc-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(91,79,207,0.18);
+  cursor: pointer; transition: all 0.3s;
+  border: 1.5px solid rgba(91,79,207,0.25);
+}
+.toc-dot.active { background: var(--brand); border-color: var(--brand); transform: scale(1.5); }
+.toc-dot:hover { transform: scale(1.4); opacity: 0.8; }
+
+.page {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 5rem 8rem;
+  position: relative;
+}
+.page-num { position: absolute; bottom: 2rem; right: 2.5rem; font-size: 12px; color: var(--gray-light); font-weight: 500; }
+
+.anim-block { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.anim-block.in { opacity: 1; transform: translateY(0); }
+.delay-1 { transition-delay: 0.08s; } .delay-2 { transition-delay: 0.16s; }
+.delay-3 { transition-delay: 0.24s; } .delay-4 { transition-delay: 0.32s; }
+.delay-5 { transition-delay: 0.40s; } .delay-6 { transition-delay: 0.48s; }
+.delay-7 { transition-delay: 0.56s; } .delay-8 { transition-delay: 0.64s; }
+
+/* COVER */
+.page-cover { background: var(--black); }
+.cover-eyebrow { font-size: 12px; font-weight: 600; color: var(--brand-mid); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 1.5rem; }
+.cover-line { width: 36px; height: 3px; background: var(--brand-mid); margin-bottom: 2.5rem; border-radius: 2px; }
+.cover-title { font-size: 56px; font-weight: 700; color: white; line-height: 1.18; margin-bottom: 1.25rem; max-width: 680px; }
+.cover-desc { font-size: 17px; color: #7070A0; line-height: 1.85; max-width: 540px; margin-bottom: 3rem; }
+.cover-meta { font-size: 13px; color: #4A4A6A; }
+
+/* DIVIDER */
+.page-divider { background: #111128; }
+.div-num { font-size: 88px; font-weight: 700; color: var(--brand-mid); opacity: 0.18; line-height: 1; margin-bottom: 0.5rem; }
+.div-company { font-size: 14px; color: #6060A0; font-weight: 500; margin-bottom: 0.9rem; }
+.div-title { font-size: 38px; font-weight: 700; color: white; line-height: 1.28; max-width: 560px; margin-bottom: 1.5rem; }
+.div-desc { font-size: 15px; color: #5050A0; line-height: 1.8; max-width: 540px; }
+
+/* CONTENT */
+.page-content { background: var(--white); }
+.page-content-gray { background: var(--bg-section); }
+.section-label { font-size: 11px; font-weight: 600; color: var(--brand); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.75rem; }
+.page-title { font-size: 32px; font-weight: 700; color: var(--black); line-height: 1.28; margin-bottom: 0.6rem; }
+.page-subtitle { font-size: 15px; color: var(--gray-light); margin-bottom: 2.5rem; }
+.h-rule { width: 100%; height: 1px; background: var(--border); margin: 2rem 0; }
+
+/* GRIDS */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; }
+.three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-top: 2rem; }
+.col-title { font-size: 11px; font-weight: 600; color: var(--gray-light); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+
+/* CARDS */
+.card { background: var(--bg-card); border-radius: 12px; padding: 1.4rem 1.6rem; border: 1px solid var(--border); transition: transform 0.22s ease, box-shadow 0.22s ease; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(91,79,207,0.08); }
+.c-num { font-size: 11px; font-weight: 600; color: var(--brand); margin-bottom: 7px; letter-spacing: 0.06em; }
+.c-title { font-size: 15px; font-weight: 600; color: var(--black); line-height: 1.4; margin-bottom: 5px; }
+.c-desc { font-size: 13px; color: var(--gray-text); line-height: 1.6; }
+
+/* LIST */
+.list-block { display: flex; flex-direction: column; }
+.list-item { display: flex; gap: 12px; align-items: flex-start; padding: 0.8rem 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--black); line-height: 1.65; }
+.list-item:last-child { border-bottom: none; }
+.li-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); margin-top: 8px; flex-shrink: 0; }
+.li-dot-brand { background: var(--brand); }
+
+/* S01 FLOW DIAGRAM */
+.flow-diagram {
+  display: grid; grid-template-columns: 1fr 38px 1fr 38px 1.6fr;
+  align-items: stretch; margin-top: 2rem; margin-bottom: 1.5rem;
+  border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+}
+.fd-box { padding: 1.75rem 1.5rem; display: flex; flex-direction: column; gap: 6px; }
+.fd-gray { background: var(--bg-card); }
+.fd-dark { background: #1A1A38; }
+.fd-light { background: var(--brand-bg); }
+.fd-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+.fd-label-gray { color: var(--gray-light); }
+.fd-label-dark { color: rgba(180,170,255,0.55); }
+.fd-label-light { color: var(--brand); }
+.fd-title { font-size: 15px; font-weight: 600; line-height: 1.38; }
+.fd-title-gray { color: var(--black); }
+.fd-title-dark { color: white; }
+.fd-title-light { color: var(--black); }
+.fd-desc { font-size: 12px; line-height: 1.6; margin-top: 2px; }
+.fd-desc-gray { color: var(--gray-text); }
+.fd-desc-dark { color: rgba(180,170,255,0.5); }
+.fd-arrow-col { display: flex; align-items: center; justify-content: center; background: var(--bg-section); }
+.fd-arrow { font-size: 16px; color: var(--gray-light); }
+.fd-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
+.fd-mini { background: white; border-radius: 8px; padding: 0.6rem 0.75rem; border: 1px solid rgba(91,79,207,0.1); }
+.fd-mini-role { font-size: 11px; font-weight: 600; color: var(--brand); margin-bottom: 2px; }
+.fd-mini-desc { font-size: 11px; color: var(--gray-text); line-height: 1.4; }
+
+/* S01 MINDSET */
+.mindset-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 2rem; }
+.mindset-card { background: var(--bg-card); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--border); transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease; }
+.mindset-card:hover { background: var(--brand-bg); border-color: rgba(91,79,207,0.25); transform: translateY(-3px); }
+.mc-num { font-size: 20px; font-weight: 700; color: var(--brand); margin-bottom: 7px; opacity: 0.7; }
+.mc-title { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 4px; }
+.mc-desc { font-size: 12px; color: var(--gray-text); line-height: 1.5; }
+
+/* INSIGHT */
+.insight-box { background: var(--brand-bg); border-radius: 12px; padding: 1.5rem 2rem; margin-top: 2rem; display: flex; align-items: flex-start; gap: 14px; border: 1px solid rgba(91,79,207,0.15); }
+.insight-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand); margin-top: 7px; flex-shrink: 0; }
+.insight-label { font-size: 10px; font-weight: 600; color: var(--brand); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 5px; }
+.insight-text { font-size: 14px; color: var(--black); line-height: 1.75; }
+
+/* KEY MESSAGE */
+.key-message { background: var(--black); border-radius: 12px; padding: 1.5rem 2rem; margin-top: 2rem; display: flex; align-items: flex-start; gap: 14px; }
+.key-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-mid); margin-top: 8px; flex-shrink: 0; }
+.key-text { font-size: 16px; font-weight: 500; color: white; line-height: 1.75; }
+
+/* S02 OTA */
+.ota-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.5rem; }
+.ota-dark { background: var(--black); border-radius: 12px; padding: 1.5rem; }
+.ota-brand { background: var(--brand-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(91,79,207,0.2); }
+.ota-title { font-size: 14px; font-weight: 600; margin-bottom: 7px; }
+.ota-dark .ota-title { color: white; }
+.ota-brand .ota-title { color: var(--brand); }
+.ota-desc { font-size: 13px; line-height: 1.6; }
+.ota-dark .ota-desc { color: #5050A0; }
+.ota-brand .ota-desc { color: var(--gray-text); }
+
+/* S03 STRUCT */
+.struct-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 1.5rem; }
+.struct-card { background: white; border-radius: 12px; padding: 1.25rem; border: 1px solid var(--border); transition: transform 0.2s; }
+.struct-card:hover { transform: translateY(-3px); }
+.sc-icon { font-size: 22px; margin-bottom: 10px; }
+.sc-title { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 4px; }
+.sc-desc { font-size: 12px; color: var(--gray-text); line-height: 1.5; }
+
+/* S04 SPEC */
+.spec-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-top: 2rem; }
+.spec-card { background: white; border-radius: 12px; padding: 1.4rem 1.5rem; border: 1.5px solid var(--border); transition: border-color 0.22s ease, transform 0.22s ease; }
+.spec-card:hover { border-color: var(--brand); transform: translateY(-3px); }
+.sc-num-brand { font-size: 11px; font-weight: 600; color: var(--brand); margin-bottom: 6px; letter-spacing: 0.06em; }
+.sc-main-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 4px; }
+.sc-main-desc { font-size: 12px; color: var(--gray-text); line-height: 1.5; }
+
+/* S04 3-ZONE */
+.zone-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-top: 2rem; }
+.zone-card { border-radius: 12px; padding: 2rem 1.5rem; text-align: center; transition: transform 0.22s ease; border: 1px solid var(--border); }
+.zone-card:hover { transform: translateY(-3px); }
+.zone-white { background: white; }
+.zone-gray { background: var(--bg-section); }
+.zone-red { background: #FFF5F5; border-color: rgba(220,38,38,0.15); }
+.zone-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; }
+.badge-dark { background: var(--black); color: white; }
+.badge-gray { background: #8E8EA8; color: white; }
+.badge-red { background: #DC2626; color: white; }
+.zone-title { font-size: 16px; font-weight: 600; color: var(--black); margin-bottom: 7px; }
+.zone-desc { font-size: 13px; color: var(--gray-text); line-height: 1.5; }
+.zone-example { font-size: 11px; color: var(--gray-light); margin-top: 8px; }
+
+/* S05 */
+.barrier-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-top: 2rem; }
+.barrier-card { background: var(--bg-card); border-radius: 12px; padding: 1.25rem 1.4rem; border: 1px solid var(--border); }
+.bc-num { font-size: 22px; margin-bottom: 8px; }
+.bc-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 5px; }
+.bc-desc { font-size: 12px; color: var(--gray-text); line-height: 1.5; }
+.flow-step-row { display: flex; align-items: center; gap: 0; margin-top: 1.75rem; }
+.flow-step-card { flex: 1; background: var(--bg-card); border-radius: 12px; padding: 1.5rem; text-align: center; border: 1px solid var(--border); transition: background 0.22s ease, transform 0.22s ease; }
+.flow-step-card:hover { background: var(--brand-bg); transform: translateY(-3px); }
+.fsc-step { font-size: 11px; font-weight: 600; color: var(--brand); margin-bottom: 7px; }
+.fsc-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 5px; }
+.fsc-desc { font-size: 12px; color: var(--gray-text); line-height: 1.5; }
+.flow-arrow-sep { font-size: 18px; color: var(--border); padding: 0 12px; flex-shrink: 0; }
+
+/* S06 */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 2rem; }
+.compare-dark { background: var(--black); border-radius: 12px; padding: 2rem; }
+.compare-light { background: var(--bg-card); border-radius: 12px; padding: 2rem; border: 1px solid var(--border); }
+.cp-flag { font-size: 28px; margin-bottom: 10px; }
+.cp-country { font-size: 17px; font-weight: 600; margin-bottom: 1rem; }
+.compare-dark .cp-country { color: white; }
+.compare-light .cp-country { color: var(--black); }
+.cp-tag { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 6px; margin: 3px 4px 3px 0; }
+.cp-tag-dark { background: rgba(255,255,255,0.07); color: #8888B8; }
+.cp-tag-light { background: var(--brand-bg); color: var(--brand); }
+
+/* APPENDIX */
+.appendix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+.appendix-card { border: 1px solid var(--border); border-radius: 12px; padding: 2rem; background: white; transition: border-color 0.22s ease, transform 0.22s ease; }
+.appendix-card:hover { border-color: var(--brand-mid); transform: translateY(-3px); }
+.ap-company { font-size: 18px; font-weight: 700; color: var(--black); margin-bottom: 5px; }
+.ap-role { font-size: 12px; color: var(--gray-light); margin-bottom: 1.25rem; }
+.ap-desc { font-size: 14px; color: var(--gray-text); line-height: 1.75; }
+.ap-cta { display: inline-block; margin-top: 1rem; font-size: 12px; font-weight: 600; color: var(--brand); }
+
+/* CLOSING */
+.page-closing { background: var(--black); align-items: center; text-align: center; }
+.closing-title { font-size: 46px; font-weight: 700; color: white; line-height: 1.3; margin-bottom: 1.5rem; max-width: 600px; }
+.closing-desc { font-size: 16px; color: #5050A0; line-height: 1.9; max-width: 500px; margin-bottom: 3rem; }
+.closing-brand { font-size: 13px; font-weight: 600; color: var(--brand-mid); }
+strong { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<nav id="toc">
+  <div class="toc-dot" data-idx="0"></div><div class="toc-dot" data-idx="1"></div>
+  <div class="toc-dot" data-idx="2"></div><div class="toc-dot" data-idx="3"></div>
+  <div class="toc-dot" data-idx="4"></div><div class="toc-dot" data-idx="4b"></div>
+  <div class="toc-dot" data-idx="5"></div><div class="toc-dot" data-idx="6"></div>
+  <div class="toc-dot" data-idx="6b"></div><div class="toc-dot" data-idx="7"></div>
+  <div class="toc-dot" data-idx="8"></div><div class="toc-dot" data-idx="8b"></div>
+  <div class="toc-dot" data-idx="9"></div><div class="toc-dot" data-idx="10"></div>
+  <div class="toc-dot" data-idx="11"></div><div class="toc-dot" data-idx="12"></div>
+  <div class="toc-dot" data-idx="13"></div><div class="toc-dot" data-idx="13b"></div>
+  <div class="toc-dot" data-idx="14"></div>
+  <div class="toc-dot" data-idx="15"></div><div class="toc-dot" data-idx="16"></div>
+  <div class="toc-dot" data-idx="17"></div><div class="toc-dot" data-idx="18"></div>
+</nav>
+
+<!-- 01 COVER -->
+<section class="page page-cover" data-idx="0">
+  <div class="anim-block"><div class="cover-eyebrow">Conference Insight Report</div></div>
+  <div class="anim-block delay-1"><div class="cover-line"></div></div>
+  <div class="anim-block delay-2"><div class="cover-title">원티드<br>하이파이브 2026</div></div>
+  <div class="anim-block delay-3"><div class="cover-desc">AI·제품·글로벌을 주제로 현업 실무자들이 직접 공유한 경험과 시행착오를 정리하고, 트립비토즈에 적용 가능한 인사이트를 도출했습니다.</div></div>
+  <div class="anim-block delay-4"><div class="cover-meta">2026.05.13 · 서울 코엑스 · PO/PM 트랙 + Growth 트랙</div></div>
+  <div class="page-num">1</div>
+</section>
+
+<!-- 02 오버뷰 -->
+<section class="page page-content" data-idx="1">
+  <div class="anim-block"><div class="section-label">Overview</div></div>
+  <div class="anim-block delay-1"><div class="page-title">6개 세션, 모두 현업에서 직접 겪은 이야기</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">각 연사는 이론이 아닌 실제 프로젝트와 시행착오를 기반으로 발표했습니다.</div></div>
+  <div class="three-col">
+    <div class="card anim-block delay-2">
+      <div class="c-num">SESSION 01</div>
+      <div class="c-title">제품과 팀을 변화시키는 AI-Powered PM</div>
+      <div style="font-size:12px;color:var(--gray-light);margin:5px 0 8px;">이미준 · 카카오스타일</div>
+      <div class="c-desc">AI가 PM의 일하는 방식을 어떻게 바꾸는지, 팀 전체로 어떻게 확산되는지를 실무 사례로 공유합니다.</div>
+    </div>
+    <div class="card anim-block delay-3">
+      <div class="c-num">SESSION 02</div>
+      <div class="c-title">금융 앱이 체류시간을 높이는 방법</div>
+      <div style="font-size:12px;color:var(--gray-light);margin:5px 0 8px;">김범수 · 카카오뱅크</div>
+      <div class="c-desc">목적성 강한 뱅킹 앱에서 '음악 듣고 캐시 받기' 서비스로 체류시간과 방문 횟수를 늘린 전략을 공유합니다.</div>
+    </div>
+    <div class="card anim-block delay-4">
+      <div class="c-num">SESSION 03</div>
+      <div class="c-title">이 제품의 고객은 내가 아니다</div>
+      <div style="font-size:12px;color:var(--gray-light);margin:5px 0 8px;">홍주영 · 라포랩스</div>
+      <div class="c-desc">4050 고객을 위한 커머스를 만들며 메이커의 직관이 반복적으로 틀렸던 경험과 고객 중심 구조화 과정을 이야기합니다.</div>
+    </div>
+    <div class="card anim-block delay-5">
+      <div class="c-num">SESSION 04</div>
+      <div class="c-title">AI Product, PO는 무엇을 설계하는가</div>
+      <div style="font-size:12px;color:var(--gray-light);margin:5px 0 8px;">장수지 · 원티드랩</div>
+      <div class="c-desc">AI 에이전트 제품을 만드는 PO의 의사결정 프레임워크와 실전 플레이북을 공유합니다.</div>
+    </div>
+    <div class="card anim-block delay-6">
+      <div class="c-num">SESSION 05</div>
+      <div class="c-title">B2B Enterprise AI 제품의 성공과 실패</div>
+      <div style="font-size:12px;color:var(--gray-light);margin:5px 0 8px;">강지혜 · 클라썸</div>
+      <div class="c-desc">엔터프라이즈 환경에서 AI 솔루션이 실제로 쓰이기까지 무엇이 필요했는지, 0→1→10의 현실을 공유합니다.</div>
+    </div>
+    <div class="card anim-block delay-7">
+      <div class="c-num">SESSION 06</div>
+      <div class="c-title">B2B SW 글로벌 진출, 현장에서 배운 것들</div>
+      <div style="font-size:12px;color:var(--gray-light);margin:5px 0 8px;">이보미 · LG CNS</div>
+      <div class="c-desc">미국·중국 시장 진출 과정에서 겪은 팀 빌딩, 영업 문화 차이, 딜 클로징의 시행착오를 공유합니다.</div>
+    </div>
+  </div>
+  <div class="page-num">2</div>
+</section>
+
+<!-- 03 S01 DIVIDER -->
+<section class="page page-divider" data-idx="2">
+  <div class="anim-block"><div class="div-num">01</div></div>
+  <div class="anim-block delay-1"><div class="div-company">이미준 · 카카오스타일 BPM</div></div>
+  <div class="anim-block delay-2"><div class="div-title">제품과 팀을 변화시키는<br>AI-Powered PM</div></div>
+  <div class="anim-block delay-3"><div class="div-desc">AI가 PM의 일하는 방식을 어떻게 바꾸는지, 팀 전체로 어떻게 확산되는지를 실무 사례로 공유합니다.</div></div>
+  <div class="page-num" style="color:#3030A0;">3</div>
+</section>
+
+<!-- 04 S01 AI 동아줄 -->
+<section class="page page-content" data-idx="3">
+  <div class="anim-block"><div class="section-label">Session 01</div></div>
+  <div class="anim-block delay-1"><div class="page-title">AI는 트렌드가 아니라 "동아줄"이었다</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">9명 팀 · 3개월 · 프랑스 K-뷰티 플랫폼 런칭 — 리소스 부족을 AI로 돌파한 이야기</div></div>
+  <div class="flow-diagram anim-block delay-2">
+    <div class="fd-box fd-gray">
+      <div class="fd-label fd-label-gray">배경</div>
+      <div class="fd-title fd-title-gray">9명, 3개월<br>글로벌 런칭</div>
+      <div class="fd-desc fd-desc-gray">리소스 부족으로<br>기존 방식으로는<br>불가능한 일정</div>
+    </div>
+    <div class="fd-arrow-col"><span class="fd-arrow">→</span></div>
+    <div class="fd-box fd-dark">
+      <div class="fd-label fd-label-dark">전환점</div>
+      <div class="fd-title fd-title-dark">Claude Opus 4.6<br>2026.02.06</div>
+      <div class="fd-desc fd-desc-dark">"AI 없이는 이 일<br>못 하겠는데"<br>팀 전체 인식 전환</div>
+    </div>
+    <div class="fd-arrow-col" style="background:var(--brand-bg);"><span class="fd-arrow" style="color:var(--brand-mid);">→</span></div>
+    <div class="fd-box fd-light">
+      <div class="fd-label fd-label-light">팀 전체로 확산</div>
+      <div class="fd-mini-grid">
+        <div class="fd-mini"><div class="fd-mini-role">마케터</div><div class="fd-mini-desc">SNS 데이터 자동화 봇 직접 구축</div></div>
+        <div class="fd-mini"><div class="fd-mini-role">디자이너</div><div class="fd-mini-desc">썸네일 자동 생성 AI 개발</div></div>
+        <div class="fd-mini"><div class="fd-mini-role">오퍼레이션</div><div class="fd-mini-desc">HS코드 자동 분류, 약관 다국어 생성</div></div>
+        <div class="fd-mini"><div class="fd-mini-role">PO</div><div class="fd-mini-desc">국가 맥락 딥리서칭, 데이터 파이프라인 집중</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="insight-box anim-block delay-4">
+    <div class="insight-dot"></div>
+    <div>
+      <div class="insight-label">트립비토즈 인사이트</div>
+      <div class="insight-text">대규모 조직은 규모에서 비롯된 절차와 정해진 문서 형식으로 인해 빠른 전환과 프로덕트 개발에 어려움을 겪고 있었고, TF 부서를 통해 프로세스 탈피를 시도하고 있었습니다. 오히려 소규모 조직이 더 빠르게 움직일 수 있다는 반증이기도 했습니다.<br><br>현재 트립비토즈 PM 조직은 Claude Code를 통해 빠른 기획 및 검증·프로덕트 개발을 진행하고 있으며, 현준님 주도 아래 팀 전반에 Claude Code 교육이 이루어졌습니다. 트립비토즈가 대기업보다 AI를 통한 업무 전환에 더 빠르게 움직이고 있음을 이번 컨퍼런스에서 체감할 수 있었습니다.</div>
+    </div>
+  </div>
+  <div class="page-num">4</div>
+</section>
+
+<!-- 05 S01 사고방식 -->
+<section class="page page-content-gray" data-idx="4">
+  <div class="anim-block"><div class="section-label">Session 01 · AI-Powered PM</div></div>
+  <div class="anim-block delay-1"><div class="page-title">AI 시대 PM의 8가지 사고방식</div></div>
+  <div class="mindset-grid">
+    <div class="mindset-card anim-block delay-1"><div class="mc-num">①</div><div class="mc-title">경계를 넘는다</div><div class="mc-desc">AI로 최선의 결과를 먼저 만들어 개발에 전달</div></div>
+    <div class="mindset-card anim-block delay-2"><div class="mc-num">②</div><div class="mc-title">경계를 전파한다</div><div class="mc-desc">팀원 모두를 프로덕트 빌더로</div></div>
+    <div class="mindset-card anim-block delay-3"><div class="mc-num">③</div><div class="mc-title">루프를 설계한다</div><div class="mc-desc">생성-검증-재생성. AI 첫 결과물은 재료다</div></div>
+    <div class="mindset-card anim-block delay-4"><div class="mc-num">④</div><div class="mc-title">그럼에도 존중한다</div><div class="mc-desc">메이커들의 전문성을 존중한다</div></div>
+    <div class="mindset-card anim-block delay-5"><div class="mc-num">⑤</div><div class="mc-title">질문을 설계한다</div><div class="mc-desc">좋은 답은 좋은 질문에서</div></div>
+    <div class="mindset-card anim-block delay-6"><div class="mc-num">⑥</div><div class="mc-title">기준을 건넨다</div><div class="mc-desc">애매한 요구사항 시대를 졸업하자</div></div>
+    <div class="mindset-card anim-block delay-7"><div class="mc-num">⑦</div><div class="mc-title">방향을 잡는다</div><div class="mc-desc">속도가 아니라 방향이 중요하다</div></div>
+    <div class="mindset-card anim-block delay-8"><div class="mc-num">⑧</div><div class="mc-title">먼저 퍼뜨린다</div><div class="mc-desc">회사의 공식 전환을 기다리지 않는다</div></div>
+  </div>
+  <div class="key-message anim-block delay-8">
+    <div class="key-dot"></div>
+    <div>
+      <div style="font-size:13px;color:var(--gray-light);margin-bottom:0.5rem;line-height:1.6;">카카오스타일은 회사가 전사에 Claude를 공식 지원하기 <strong style="color:var(--gray-text);">3개월 전</strong>, 팀 스스로 먼저 AI를 도입하고 변화를 만들어냈습니다.</div>
+      <div class="key-text">"전체 조직은 당연히 팀보다 빠를 수 없습니다. 그리고 팀은 개인보다 빠를 수 없습니다. 먼저 써본 사람만이 어디에 쓸지 알 수 있습니다."</div>
+    </div>
+  </div>
+  <div class="page-num">5</div>
+</section>
+
+<!-- 05-B S01 28페이지 — 먼저 움직인 팀 -->
+<section class="page page-content-gray" data-idx="4b">
+  <div class="anim-block"><div class="section-label">Session 01 · 우리 팀이 AI-Powered Team 되기 쉬었던 이유</div></div>
+  <div class="anim-block delay-1"><div class="page-title">비용을 따지기 전에, 먼저 실행했다</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">카카오스타일이 AI-Powered Team이 될 수 있었던 두 가지 이유</div></div>
+
+  <div class="two-col anim-block delay-2">
+    <!-- 첫 번째 이유 -->
+    <div style="background:white;border-radius:14px;padding:2rem;border:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:600;color:var(--brand);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;">첫째</div>
+      <div style="font-size:17px;font-weight:700;color:var(--black);margin-bottom:1rem;line-height:1.35;">AI 바이브코딩을 적용하고<br>레거시와 분리되어 있었다</div>
+      <div class="list-block">
+        <div class="list-item"><div class="li-dot li-dot-brand"></div><div>모놀리틱 구조 — 분산된 MSA보다 AI가 전체 맥락 파악이 쉬움</div></div>
+        <div class="list-item"><div class="li-dot li-dot-brand"></div><div>바이브코딩 산출물 — md 파일에 구조 설명이 명확해 AI 활용에 최적화</div></div>
+      </div>
+    </div>
+    <!-- 두 번째 이유 -->
+    <div style="background:white;border-radius:14px;padding:2rem;border:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:600;color:var(--brand);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;">둘째</div>
+      <div style="font-size:17px;font-weight:700;color:var(--black);margin-bottom:1rem;line-height:1.35;">비용 대비 생산성을<br>따지기보다는 실행했다</div>
+      <div class="list-block">
+        <div class="list-item"><div class="li-dot li-dot-brand"></div><div>회사 공식 지원(3월)보다 먼저, 팀 차원에서 변화를 제안하고 시도</div></div>
+        <div class="list-item"><div class="li-dot li-dot-brand"></div><div>전체 조직은 팀보다, 팀은 개인보다 빠를 수 없다</div></div>
+        <div class="list-item"><div class="li-dot li-dot-brand"></div><div>먼저 써본 사람만이 어디에 쓸지 알 수 있다</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box anim-block delay-5">
+    <div class="insight-dot"></div>
+    <div>
+      <div class="insight-label">트립비토즈 인사이트</div>
+      <div class="insight-text">트립비토즈도 그 방향 위에 있습니다. 현준님 주도로 Claude Code가 팀 전반에 전파되고 있고, PM이 직접 AI를 활용해 기획·개발을 진행하고 있습니다. 완벽한 준비보다 먼저 써보는 것이 중요한 시대, 트립비토즈는 이미 그 방향성에 맞게 가고 있습니다.</div>
+    </div>
+  </div>
+  <div class="page-num">6</div>
+</section>
+
+<!-- 06 S02 DIVIDER -->
+<section class="page page-divider" data-idx="5">
+  <div class="anim-block"><div class="div-num">02</div></div>
+  <div class="anim-block delay-1"><div class="div-company">김범수 · 카카오뱅크 Marketing Manager</div></div>
+  <div class="anim-block delay-2"><div class="div-title">금융 앱이 고객 방문과<br>체류시간을 높이는 방법</div></div>
+  <div class="anim-block delay-3"><div class="div-desc">목적성이 강한 뱅킹 앱에서 '음악 듣고 캐시 받기' 서비스로 체류시간과 방문 횟수를 늘린 전략을 공유합니다.</div></div>
+  <div class="page-num" style="color:#3030A0;">6</div>
+</section>
+
+<!-- 07 S02 내용 페이지 1 — 문제와 해결 -->
+<section class="page page-content" data-idx="6">
+  <div class="anim-block"><div class="section-label">Session 02</div></div>
+  <div class="anim-block delay-1"><div class="page-title">목적성 강한 앱, 어떻게 체류를 만들었나</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">뱅킹 앱의 태생적 한계를 콘텐츠로 돌파한 전략</div></div>
+
+  <!-- 문제 → 해결 흐름 -->
+  <div style="display:grid;grid-template-columns:1fr 60px 1fr;align-items:stretch;gap:0;margin-bottom:2.5rem;" class="anim-block delay-2">
+    <!-- 문제 -->
+    <div style="background:var(--bg-card);border-radius:12px 0 0 12px;padding:2rem;border:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:600;color:var(--gray-light);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;">문제</div>
+      <div class="list-block">
+        <div class="list-item"><div class="li-dot li-dot-brand"></div><div>뱅킹 앱은 송금·조회 목적 없이는 열지 않는다</div></div>
+        <div class="list-item"><div class="li-dot li-dot-brand"></div><div>방문 횟수·체류시간 부족</div></div>
+        <div class="list-item" style="border:none;"><div class="li-dot li-dot-brand"></div><div>마케팅 효과 및 부가 서비스 노출 기회 감소</div></div>
+      </div>
+    </div>
+    <!-- 화살표 -->
+    <div style="display:flex;align-items:center;justify-content:center;background:var(--bg-section);font-size:20px;color:var(--gray-light);">→</div>
+    <!-- 해결 -->
+    <div style="background:var(--brand-bg);border-radius:0 12px 12px 0;padding:2rem;border:1px solid rgba(91,79,207,0.2);border-left:none;">
+      <div style="font-size:11px;font-weight:600;color:var(--brand);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;">해결</div>
+      <div style="font-size:16px;font-weight:600;color:var(--black);margin-bottom:0.75rem;">음악 청취 시 캐시 포인트 적립</div>
+      <div style="font-size:14px;color:var(--gray-text);margin-bottom:1.5rem;">목적 없이도 앱을 열게 만드는 콘텐츠 유인 전략</div>
+      <div style="display:flex;gap:1rem;">
+        <div style="flex:1;background:white;border-radius:10px;padding:1rem;text-align:center;border:1px solid rgba(91,79,207,0.15);">
+          <div style="font-size:26px;font-weight:700;color:var(--brand);line-height:1;">↑</div>
+          <div style="font-size:12px;color:var(--gray-text);margin-top:4px;">방문 횟수</div>
+        </div>
+        <div style="flex:1;background:white;border-radius:10px;padding:1rem;text-align:center;border:1px solid rgba(45,168,154,0.2);">
+          <div style="font-size:26px;font-weight:700;color:var(--accent-teal);line-height:1;">↑</div>
+          <div style="font-size:12px;color:var(--gray-text);margin-top:4px;">체류시간</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">7</div>
+</section>
+
+<!-- 07-B S02 내용 페이지 2 — OTA 구조적 문제 + 인사이트 -->
+<section class="page page-content-gray" data-idx="6b">
+  <div class="anim-block"><div class="section-label">Session 02 · 트립비토즈와 같은 구조적 문제</div></div>
+  <div class="anim-block delay-1"><div class="page-title">목적성 강한 앱의 공통 과제</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">뱅킹 앱과 OTA는 태생적으로 같은 문제를 안고 있습니다</div></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:3rem;" class="anim-block delay-2">
+    <div style="background:var(--black);border-radius:14px;padding:2.5rem;">
+      <div style="font-size:24px;margin-bottom:12px;">🏦</div>
+      <div style="font-size:18px;font-weight:600;color:white;margin-bottom:1rem;">뱅킹 앱</div>
+      <div style="font-size:14px;color:#5050A0;line-height:1.7;">송금·조회 등 명확한 목적이 없으면<br>앱을 열 이유가 없다</div>
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.07);">
+        <div style="font-size:12px;font-weight:600;color:var(--brand-mid);margin-bottom:6px;">해결책</div>
+        <div style="font-size:13px;color:#8080C0;">음악 + 캐시로 비목적성 방문 유인</div>
+      </div>
+    </div>
+    <div style="background:var(--brand-bg);border-radius:14px;padding:2.5rem;border:1px solid rgba(91,79,207,0.2);">
+      <div style="font-size:24px;margin-bottom:12px;">✈️</div>
+      <div style="font-size:18px;font-weight:600;color:var(--brand-dark);margin-bottom:1rem;">트립비토즈 (OTA)</div>
+      <div style="font-size:14px;color:var(--gray-text);line-height:1.7;">여행 계획이 없으면<br>앱을 열 이유가 없다</div>
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(91,79,207,0.15);">
+        <div style="font-size:12px;font-weight:600;color:var(--brand);margin-bottom:6px;">같은 구조적 문제</div>
+        <div style="font-size:13px;color:var(--brand);">비목적성 방문 유인 전략이 필요하다</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box anim-block delay-4">
+    <div class="insight-dot"></div>
+    <div>
+      <div class="insight-label">트립비토즈 인사이트</div>
+      <div class="insight-text">라운지·피드에서 콘텐츠를 소비하거나 글을 작성할 때 트립캐시를 지급하는 방식을 고려해볼 만합니다. 여행 목적이 없어도 앱을 열게 만드는 비목적성 방문 유인이 필요한 시점입니다.</div>
+    </div>
+  </div>
+  <div class="page-num">8</div>
+</section>
+
+<!-- 08 S03 DIVIDER -->
+<section class="page page-divider" data-idx="7">
+  <div class="anim-block"><div class="div-num">03</div></div>
+  <div class="anim-block delay-1"><div class="div-company">홍주영 · 라포랩스 대표 & 제품팀 리드</div></div>
+  <div class="anim-block delay-2"><div class="div-title">이 제품의 고객은<br>내가 아니다</div></div>
+  <div class="anim-block delay-3"><div class="div-desc">4050 고객을 위한 커머스를 만들며 메이커의 직관이 반복적으로 틀렸던 경험과, 고객 중심을 구조로 만드는 과정을 이야기합니다.</div></div>
+  <div class="page-num" style="color:#3030A0;">8</div>
+</section>
+
+<!-- 09 S03 내용 페이지 1 — 우리가 틀렸다 -->
+<section class="page page-content" data-idx="8">
+  <div class="anim-block"><div class="section-label">Session 03</div></div>
+  <div class="anim-block delay-1"><div class="page-title">우리가 생각한 고객과, 실제 고객은 달랐다</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">4050 고객에 대한 우리의 직관은 반복적으로 틀렸습니다</div></div>
+
+  <!-- 공백 발견 — 예상/실제 위로 이동 -->
+  <div class="anim-block delay-2" style="background:var(--black);border-radius:14px;padding:2rem 2.5rem;display:flex;align-items:center;gap:2rem;margin-bottom:1.25rem;">
+    <div style="flex-shrink:0;">
+      <div style="font-size:11px;font-weight:600;color:rgba(180,170,255,0.5);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">시장 공백 발견</div>
+      <div style="font-size:22px;font-weight:700;color:white;line-height:1.3;">4050을 위한<br>쇼핑몰이 없었다</div>
+    </div>
+    <div style="width:1px;height:60px;background:rgba(255,255,255,0.08);flex-shrink:0;"></div>
+    <div style="font-size:14px;color:#6060A0;line-height:1.7;">어머니가 낯선 사이트에서 옷을 사는 모습을 보며 시작된 질문 —<br><span style="color:var(--brand-mid);font-weight:500;">"왜 40~50대가 편하게 쇼핑할 수 있는 곳이 없지?"</span><br>→ 퀸잇 탄생</div>
+  </div>
+
+  <!-- 예상 vs 실제 2가지 -->
+  <div style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:2.5rem;">
+    <div class="anim-block delay-3" style="display:grid;grid-template-columns:1fr 48px 1fr;align-items:center;gap:0;">
+      <div style="background:var(--bg-card);border-radius:12px 0 0 12px;padding:1.5rem 2rem;border:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:600;color:var(--gray-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">예상</div>
+        <div style="font-size:16px;font-weight:600;color:var(--black);line-height:1.4;">40~50대도 일반 쇼핑몰 공식인<br>인기 랭킹을 좋아할 것이다</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;background:var(--bg-section);height:100%;font-size:18px;color:var(--gray-light);">→</div>
+      <div style="background:var(--brand-bg);border-radius:0 12px 12px 0;padding:1.5rem 2rem;border:1px solid rgba(91,79,207,0.2);border-left:none;">
+        <div style="font-size:11px;font-weight:600;color:var(--brand);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">실제</div>
+        <div style="font-size:16px;font-weight:600;color:var(--brand-dark);line-height:1.4;">취향이 확고한 사람들이었다<br><span style="font-size:14px;color:var(--accent-teal);font-weight:500;">개인화 추천으로 전환 후 구매 전환율 2배 상승</span></div>
+      </div>
+    </div>
+
+    <div class="anim-block delay-4" style="display:grid;grid-template-columns:1fr 48px 1fr;align-items:center;gap:0;">
+      <div style="background:var(--bg-card);border-radius:12px 0 0 12px;padding:1.5rem 2rem;border:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:600;color:var(--gray-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">예상</div>
+        <div style="font-size:16px;font-weight:600;color:var(--black);line-height:1.4;">40~50대는 모바일에<br>익숙하지 않을 것이다</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;background:var(--bg-section);height:100%;font-size:18px;color:var(--gray-light);">→</div>
+      <div style="background:var(--brand-bg);border-radius:0 12px 12px 0;padding:1.5rem 2rem;border:1px solid rgba(91,79,207,0.2);border-left:none;">
+        <div style="font-size:11px;font-weight:600;color:var(--brand);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">실제</div>
+        <div style="font-size:16px;font-weight:600;color:var(--brand-dark);line-height:1.4;">모바일을 엄청나게 잘 활용<br><span style="font-size:14px;color:var(--gray-text);font-weight:400;">생소한 사이트도 직접 찾아 2주에 한 번씩 구매</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box anim-block delay-5">
+    <div class="insight-dot"></div>
+    <div>
+      <div class="insight-label">트립비토즈 인사이트</div>
+      <div class="insight-text">우리가 생각하는 우리 유저의 모습이 실제와 다를 수 있습니다. 트립비토즈의 유저가 서비스를 어떻게 쓰는지, 우리가 그 모습을 제대로 알고 있는지 한 번쯤 점검해볼 필요가 있습니다.</div>
+    </div>
+  </div>
+  <div class="page-num">11</div>
+</section>
+
+<!-- 09-B S03 내용 페이지 2 — 고객을 알기 위한 구조 -->
+<section class="page page-content-gray" data-idx="8b">
+  <div class="anim-block"><div class="section-label">Session 03 · 고객을 알기 위한 노력</div></div>
+  <div class="anim-block delay-1"><div class="page-title">고객에 대한 관심을 의지가 아니라 구조로 만들었다</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">라포랩스는 고객 인사이트를 개인기에 맡기지 않고 조직 차원에서 시스템화했습니다</div></div>
+
+  <div class="struct-grid anim-block delay-2">
+    <div class="struct-card">
+      <div class="sc-icon">🔬</div>
+      <div class="sc-title">전담 인사이트팀</div>
+      <div class="sc-desc">UX 리서처로 구성된 전담팀. 인터뷰 가이드라인, 유도신문 방지, 배석 가이드까지 체계적으로 운영</div>
+    </div>
+    <div class="struct-card">
+      <div class="sc-icon">📐</div>
+      <div class="sc-title">파운데이셔널 리서치</div>
+      <div class="sc-desc">단순 UT를 넘어 전략 방향성을 위한 정성 리서치를 주기적으로 수행. 데이터가 알려주지 못하는 "왜"를 찾기 위해</div>
+    </div>
+    <div class="struct-card">
+      <div class="sc-icon">🤖</div>
+      <div class="sc-title">AI 에이전트 '라쿠'</div>
+      <div class="sc-desc">리서치 보고서를 AI 스킬로 체계화. 사내 누구나 슬랙에서 바로 리서치 결과에 접근 가능</div>
+    </div>
+    <div class="struct-card">
+      <div class="sc-icon">🏛️</div>
+      <div class="sc-title">4550 연구소 신설</div>
+      <div class="sc-desc">고객 이해 심층화를 위한 전담 연구 조직. 고객에 대한 관심을 조직 구조로 만든 사례</div>
+    </div>
+  </div>
+
+  <div class="key-message anim-block delay-6">
+    <div class="key-dot"></div>
+    <div class="key-text">데이터는 성공/실패를 알려주지만 "왜"는 알려주지 않는다. 정성 리서치와 데이터를 함께 봐야 한다.</div>
+  </div>
+
+  <div class="page-num">10</div>
+</section>
+
+<!-- 10 S04 DIVIDER -->
+<section class="page page-divider" data-idx="9">
+  <div class="anim-block"><div class="div-num">04</div></div>
+  <div class="anim-block delay-1"><div class="div-company">장수지 · 원티드랩 PO</div></div>
+  <div class="anim-block delay-2"><div class="div-title">AI Product,<br>PO는 무엇을 설계하는가</div></div>
+  <div class="anim-block delay-3"><div class="div-desc">AI 에이전트 제품을 만드는 PO의 의사결정 프레임워크와 실전 플레이북을 공유합니다.</div></div>
+  <div class="page-num" style="color:#3030A0;">10</div>
+</section>
+
+<!-- 11 S04 AI Spec -->
+<section class="page page-content" data-idx="10">
+  <div class="anim-block"><div class="section-label">Session 04</div></div>
+  <div class="anim-block delay-1"><div class="page-title">AI 에이전트 설계를 위한 6가지 항목 — AI Spec</div></div>
+  <div class="spec-grid">
+    <div class="spec-card anim-block delay-2"><div class="sc-num-brand">01 페르소나</div><div class="sc-main-title">이 에이전트는 누구인가</div><div class="sc-main-desc">역할, 말투, 정체성 정의</div></div>
+    <div class="spec-card anim-block delay-3"><div class="sc-num-brand">02 대화 범위</div><div class="sc-main-title">무엇을 다루고, 무엇을 다루지 않는가</div><div class="sc-main-desc">범위 안팎을 명확하게</div></div>
+    <div class="spec-card anim-block delay-4"><div class="sc-num-brand">03 Happy Path</div><div class="sc-main-title">이상적인 한 턴·세션 흐름</div><div class="sc-main-desc">정상 시나리오 정의</div></div>
+    <div class="spec-card anim-block delay-5"><div class="sc-num-brand">04 대표 시나리오</div><div class="sc-main-title">자주 들어오는 케이스</div><div class="sc-main-desc">기대 응답 방향 설정</div></div>
+    <div class="spec-card anim-block delay-6"><div class="sc-num-brand">05 가드레일</div><div class="sc-main-title">어디까지 답하고, 무엇을 금지하나</div><div class="sc-main-desc">3-Zone으로 관리</div></div>
+    <div class="spec-card anim-block delay-7"><div class="sc-num-brand">06 평가 기준</div><div class="sc-main-title">좋은 응답의 기준</div><div class="sc-main-desc">배포 가능 기준 설정</div></div>
+  </div>
+  <div class="key-message anim-block delay-8">
+    <div class="key-dot"></div>
+    <div class="key-text">기능을 정의하는 것에서 → 판단 기준을 설계하는 것으로. AI 시대 PO의 역할이 확장됩니다.</div>
+  </div>
+  <div class="page-num">11</div>
+</section>
+
+<!-- 12 S04 3-Zone -->
+<section class="page page-content-gray" data-idx="11">
+  <div class="anim-block"><div class="section-label">Session 04 · 가드레일 프레임워크</div></div>
+  <div class="anim-block delay-1"><div class="page-title">가드레일 3-Zone — AI 응답 범위 설계</div></div>
+  <div class="zone-row">
+    <div class="zone-card zone-white anim-block delay-2">
+      <div class="zone-badge badge-dark">White Zone</div>
+      <div class="zone-title">적극 응답</div>
+      <div class="zone-desc">자유롭게 답변하는 영역</div>
+      <div class="zone-example">예: 멘토의 이직 경험 질문</div>
+    </div>
+    <div class="zone-card zone-gray anim-block delay-4">
+      <div class="zone-badge badge-gray">Gray Zone</div>
+      <div class="zone-title">조건부 응답</div>
+      <div class="zone-desc">범위를 제한하고 근거 수준 명시</div>
+      <div class="zone-example">예: 특정 기업 현재 연봉 수치</div>
+    </div>
+    <div class="zone-card zone-red anim-block delay-6">
+      <div class="zone-badge badge-red">Red Zone</div>
+      <div class="zone-title">응답 금지</div>
+      <div class="zone-desc">정중히 거절, 안전한 대체 안내</div>
+      <div class="zone-example">예: 멘토 개인정보 요청</div>
+    </div>
+  </div>
+  <div class="insight-box anim-block delay-7">
+    <div class="insight-dot"></div>
+    <div>
+      <div class="insight-label">트립비토즈 인사이트</div>
+      <div class="insight-text">AI Spec과 3-Zone은 향후 AI 기능 기획 시 바로 꺼내 쓸 수 있는 실무 체크리스트입니다.</div>
+    </div>
+  </div>
+  <div class="page-num">12</div>
+</section>
+
+<!-- 13 S05 DIVIDER -->
+<section class="page page-divider" data-idx="12">
+  <div class="anim-block"><div class="div-num">05</div></div>
+  <div class="anim-block delay-1"><div class="div-company">강지혜 · 클라썸 Product Experience Head</div></div>
+  <div class="anim-block delay-2"><div class="div-title">B2B Enterprise AI 제품을<br>만들며 겪은 성공과 실패</div></div>
+  <div class="anim-block delay-3"><div class="div-desc">엔터프라이즈 환경에서 AI 솔루션이 실제로 쓰이기까지 무엇이 필요했는지, 0→1→10의 현실을 공유합니다.</div></div>
+  <div class="page-num" style="color:#3030A0;">13</div>
+</section>
+
+<!-- 14 S05 내용 A — 실패와 성공 -->
+<section class="page page-content" data-idx="13">
+  <div class="anim-block"><div class="section-label">Session 05</div></div>
+  <div class="anim-block delay-1"><div class="page-title">0→1의 순서가 결과를 바꿨다</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">클라썸은 같은 팀이 AI 제품을 두 번 만들었습니다. 한 번은 실패했고, 한 번은 성공했습니다.</div></div>
+
+  <!-- 실패 vs 성공 대비 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem;" class="anim-block delay-3">
+    <div style="background:var(--bg-card);border-radius:12px;padding:2rem;border:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:600;color:#DB0000;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;">2023 · 실패</div>
+      <div style="font-size:16px;font-weight:600;color:var(--black);margin-bottom:0.75rem;">사내 AI 검색 도구</div>
+      <div style="font-size:14px;color:var(--gray-text);line-height:1.7;margin-bottom:1.25rem;">성능 검증 없이 제품화부터 시작했다. 막상 완성해보니 실제로 쓸 수 있는 수준이 아니었다.</div>
+      <div style="background:white;border-radius:8px;padding:0.875rem 1rem;border:1px solid var(--border);">
+        <div style="font-size:12px;font-weight:600;color:#DB0000;margin-bottom:3px;">실패 원인</div>
+        <div style="font-size:13px;color:var(--gray-text);">제품화 → 성능 검증 순서로 진행</div>
+      </div>
+    </div>
+    <div style="background:var(--brand-bg);border-radius:12px;padding:2rem;border:1px solid rgba(91,79,207,0.2);">
+      <div style="font-size:11px;font-weight:600;color:var(--accent-teal);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;">2025 · 성공</div>
+      <div style="font-size:16px;font-weight:600;color:var(--black);margin-bottom:0.75rem;">대학 학사 상담 AI</div>
+      <div style="font-size:13px;color:var(--gray-light);margin-bottom:0.5rem;">클라썸은 대학에 학습 관리 플랫폼을 납품하는 B2B 회사. 학생들의 수강신청·졸업 요건·장학금 등 반복 문의를 AI가 답변하는 시스템.</div>
+      <div style="font-size:14px;color:var(--gray-text);line-height:1.7;margin-bottom:1.25rem;">이번엔 성능부터 검증했다. 실제 데이터로 기준을 세우고, 1개 학교 Pilot을 거친 뒤에야 확장했다.</div>
+      <div style="background:white;border-radius:8px;padding:0.875rem 1rem;border:1px solid rgba(45,168,154,0.2);">
+        <div style="font-size:12px;font-weight:600;color:var(--accent-teal);margin-bottom:3px;">성공 원인</div>
+        <div style="font-size:13px;color:var(--gray-text);">성능 검증 → Pilot → 확장 순서로 진행</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 검증 순서 -->
+  <div class="anim-block delay-4"><div class="col-title">클라썸이 찾아낸 0→1 검증 순서</div></div>
+  <div class="flow-step-row anim-block delay-5">
+    <div class="flow-step-card">
+      <div class="fsc-step">STEP 1</div>
+      <div class="fsc-title">성능 먼저 검증</div>
+      <div class="fsc-desc">실 고객 데이터로 "이게 실제로 동작하는가" 기준부터 세운다</div>
+    </div>
+    <div class="flow-arrow-sep">→</div>
+    <div class="flow-step-card">
+      <div class="fsc-step">STEP 2</div>
+      <div class="fsc-title">1개 고객사 Pilot</div>
+      <div class="fsc-desc">성능이 검증됐다고 도입이 되는 건 아니다. 실제 고객 환경에서 따로 검증 필요</div>
+    </div>
+    <div class="flow-arrow-sep">→</div>
+    <div class="flow-step-card">
+      <div class="fsc-step">STEP 3</div>
+      <div class="fsc-title">확장 검증</div>
+      <div class="fsc-desc">첫 고객에서 통한 방식이 다른 고객에게도 통하는지 확인한다</div>
+    </div>
+  </div>
+  <div class="page-num">14</div>
+</section>
+
+<!-- 14B S05 내용 B — Enterprise의 현실 + 인사이트 -->
+<section class="page page-content-gray" data-idx="13b">
+  <div class="anim-block"><div class="section-label">Session 05 · Enterprise AI의 현실</div></div>
+  <div class="anim-block delay-1"><div class="page-title">B2B에는 AI 성능 외에도 넘어야 할 벽이 있다</div></div>
+  <div class="anim-block delay-2"><div class="page-subtitle">아무리 좋은 AI 제품도 엔터프라이즈 환경에선 다른 이유로 막힐 수 있습니다</div></div>
+
+  <div class="barrier-grid anim-block delay-2">
+    <div class="barrier-card">
+      <div class="bc-num">⏳</div>
+      <div class="bc-title">배움의 속도가 느리다</div>
+      <div class="bc-desc">런칭 후 결과 확인까지 수개월~1년이 걸린다. B2C처럼 빠르게 반복하기가 어렵다.</div>
+    </div>
+    <div class="barrier-card">
+      <div class="bc-num">👥</div>
+      <div class="bc-title">한 명의 만족으로 부족하다</div>
+      <div class="bc-desc">도입을 결정하는 사람, 실제로 쓰는 사람, 비용을 승인하는 임원이 모두 다르다. 각자 다른 기준을 동시에 충족해야 한다.</div>
+    </div>
+    <div class="barrier-card">
+      <div class="bc-num">🔒</div>
+      <div class="bc-title">보안이 비토권을 가진다</div>
+      <div class="bc-desc">AI 성능을 높이려면 고객 데이터가 필요하지만, 보안 정책으로 데이터 접근 자체가 막히는 경우가 생긴다.</div>
+    </div>
+  </div>
+
+  <!-- 고도화 vs 확장 딜레마 -->
+  <div class="anim-block delay-4" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:2rem;">
+    <div style="background:white;border-radius:12px;padding:1.5rem;border:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:600;color:var(--brand);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">고도화</div>
+      <div style="font-size:14px;font-weight:600;color:var(--black);margin-bottom:6px;">특정 고객 요구에 깊이 맞춘다</div>
+      <div style="font-size:13px;color:var(--gray-text);line-height:1.6;">만족도는 높지만 다른 고객에게 그대로 적용하기 어렵다</div>
+    </div>
+    <div style="background:white;border-radius:12px;padding:1.5rem;border:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:600;color:var(--accent-teal);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">확장</div>
+      <div style="font-size:14px;font-weight:600;color:var(--black);margin-bottom:6px;">보편적인 기능으로 넓혀간다</div>
+      <div style="font-size:13px;color:var(--gray-text);line-height:1.6;">확장성은 좋지만 개별 고객의 세밀한 요구를 충족하기 어렵다</div>
+    </div>
+  </div>
+
+  <div class="key-message anim-block delay-6">
+    <div class="key-dot"></div>
+    <div>
+      <div style="font-size:13px;color:var(--gray-light);margin-bottom:0.5rem;line-height:1.6;">학사 상담 AI를 직접 만들어보며 경험한 것 — AI로 빠르게 만들 수 있는 것과, 실제로 업무에 맡길 수 있는 것 사이엔 생각보다 큰 간극이 있었습니다.</div>
+      <div class="key-text">"그럴듯한 70은 쉬워졌지만, 업무에 온전히 맡길 수 있는 100은 여전히 어렵습니다."</div>
+    </div>
+  </div>
+
+  <div class="insight-box anim-block delay-7">
+    <div class="insight-dot"></div>
+    <div>
+      <div class="insight-label">트립비토즈 인사이트</div>
+      <div class="insight-text">트립비토즈의 B2B 솔루션도 같은 어려움을 겪을 수 있습니다. 특정 고객사에 맞추는 고도화와 더 많은 고객으로 확장하는 것 사이에서, 어느 방향으로 갈지 미리 정해두는 것이 중요합니다.</div>
+    </div>
+  </div>
+  <div class="page-num">15</div>
+</section>
+
+<!-- 15 S06 DIVIDER -->
+<section class="page page-divider" data-idx="14">
+  <div class="anim-block"><div class="div-num">06</div></div>
+  <div class="anim-block delay-1"><div class="div-company">이보미 · LG CNS Product Manager, Team Leader</div></div>
+  <div class="anim-block delay-2"><div class="div-title">B2B SW의 글로벌 진출,<br>현장에서 배운 것들</div></div>
+  <div class="anim-block delay-3"><div class="div-desc">미국·중국 시장 진출 과정에서 겪은 팀 빌딩, 영업 문화 차이, 딜 클로징의 시행착오를 공유합니다.</div></div>
+  <div class="page-num" style="color:#3030A0;">15</div>
+</section>
+
+<!-- 16 S06 내용 -->
+<section class="page page-content" data-idx="15">
+  <div class="anim-block"><div class="section-label">Session 06</div></div>
+  <div class="anim-block delay-1"><div class="page-title">글로벌은 같은 시장이 아니다</div></div>
+  <div class="h-rule anim-block delay-2"></div>
+  <div class="compare-grid">
+    <div class="compare-dark anim-block delay-3">
+      <div class="cp-flag">🇺🇸</div>
+      <div class="cp-country">미국</div>
+      <span class="cp-tag cp-tag-dark">데이터·수치 중심 영업</span>
+      <span class="cp-tag cp-tag-dark">링크드인 교환 후 즉각 미팅</span>
+      <span class="cp-tag cp-tag-dark">계약 직전 이틀 공백 → 딜 뺏김 경험</span>
+    </div>
+    <div class="compare-light anim-block delay-5">
+      <div class="cp-flag">🇨🇳</div>
+      <div class="cp-country">중국</div>
+      <span class="cp-tag cp-tag-light">관계 중심 영업</span>
+      <span class="cp-tag cp-tag-light">현지어 필수</span>
+      <span class="cp-tag cp-tag-light">경품이 가장 효과적</span>
+    </div>
+  </div>
+  <div class="key-message anim-block delay-6">
+    <div class="key-dot"></div>
+    <div class="key-text">"정답이 아니라 우리 팀·제품에 맞는 적합한 답을 찾아나가는 것이 중요하다"</div>
+  </div>
+  <div class="insight-box anim-block delay-7">
+    <div class="insight-dot"></div>
+    <div>
+      <div class="insight-label">트립비토즈 인사이트</div>
+      <div class="insight-text">같은 제품이라도 시장마다 맥락이 다르면 전혀 다른 방식으로 접근해야 합니다. 트립비토즈도 글로벌 서비스를 운영하면서 각 국가의 문화적 맥락에 맞게 UX나 마케팅 방식을 달리 가져가는 것을 고려해볼 만합니다.</div>
+    </div>
+  </div>
+  <div class="page-num">16</div>
+</section>
+
+<!-- 17 부록 DIVIDER -->
+<section class="page page-divider" data-idx="16">
+  <div class="anim-block"><div class="div-num" style="font-size:64px;opacity:0.2;">+</div></div>
+  <div class="anim-block delay-1"><div class="div-company">컨퍼런스 현장 네트워킹</div></div>
+  <div class="anim-block delay-2"><div class="div-title">세션 외 현장에서<br>만난 솔루션들</div></div>
+  <div class="anim-block delay-3"><div class="div-desc">세션과 별개로 현장에서 직접 대화를 나눈 서비스입니다.</div></div>
+  <div class="page-num" style="color:#3030A0;">17</div>
+</section>
+
+<!-- 18 부록 -->
+<section class="page page-content" data-idx="17">
+  <div class="anim-block"><div class="section-label">부록 · 네트워킹</div></div>
+  <div class="anim-block delay-1"><div class="page-title">팀에 공유할 만한 서비스</div></div>
+  <div class="appendix-grid">
+    <div class="appendix-card anim-block delay-2">
+      <div class="ap-company">쏘카인드</div>
+      <div class="ap-role">세일즈 화법 트레이닝 솔루션 · 세일즈 팀장과 대화</div>
+      <div class="ap-desc">세일즈 담당자의 화법과 커뮤니케이션 역량을 트레이닝하는 솔루션입니다. 트립비토즈 세일즈팀에 소개해볼 만한 서비스로, 관심 있으면 미팅 연결이 가능합니다.</div>
+      <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;">
+        <div style="font-size:13px;font-weight:600;color:var(--black);">백지원 · Sales팀 팀장</div>
+        <div style="font-size:12px;color:var(--gray-text);">크디랩주식회사 (Creative Digitalab)</div>
+        <div style="font-size:12px;color:var(--gray-light);">jiwon@creatived.kr · 010-7935-6763</div>
+      </div>
+    </div>
+    <div class="appendix-card anim-block delay-4">
+      <div class="ap-company">노션 (Notion)</div>
+      <div class="ap-role">사업개발 매니저와 대화</div>
+      <div class="ap-desc">프로젝트·히스토리 관리에 활용하고, AI가 축적된 히스토리를 읽어 프롬프트로 검색하는 방식으로 확장 가능합니다. 현재 문서·히스토리 관리 방식 개선을 위한 도입 검토를 제안합니다.</div>
+      <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;">
+        <div style="font-size:13px;font-weight:600;color:var(--black);">최승연 (Seungyeon Choi) · 사업개발 매니저</div>
+        <div style="font-size:12px;color:var(--gray-text);">Notion (makenotion)</div>
+        <div style="font-size:12px;color:var(--gray-light);">schoi@makenotion.com · +82 10 2797 4056</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">18</div>
+</section>
+
+<!-- 19 CLOSING -->
+<section class="page page-closing" data-idx="18">
+  <div class="anim-block delay-1"><div class="closing-title">빠르게 써본 사람이<br>가장 잘 쓰게 됩니다</div></div>
+  <div class="anim-block delay-3"><div class="closing-desc">6개 세션 모두 한 가지 공통점이 있었습니다.<br>직접 부딪히고, 실패하고, 다시 시도한 사람들의 이야기였습니다.<br>트립비토즈도 지금 그 과정 안에 있습니다.</div></div>
+  <div class="anim-block delay-5"><div class="closing-brand">Tripbtoz · 2026</div></div>
+  <div class="page-num" style="color:#3030A0;">19</div>
+</section>
+
+<script>
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  bar.style.width = pct + '%';
+});
+const animBlocks = document.querySelectorAll('.anim-block');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+animBlocks.forEach(el => io.observe(el));
+const pages = document.querySelectorAll('.page');
+const tocDots = document.querySelectorAll('.toc-dot');
+const pageObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = e.target.getAttribute('data-idx');
+      tocDots.forEach(d => d.classList.remove('active'));
+      const active = document.querySelector(`.toc-dot[data-idx="${idx}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.5 });
+pages.forEach(p => pageObserver.observe(p));
+tocDots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const idx = dot.getAttribute('data-idx');
+    const target = document.querySelector(`.page[data-idx="${idx}"]`);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
